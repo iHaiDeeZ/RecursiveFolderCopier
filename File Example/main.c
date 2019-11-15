@@ -11,23 +11,24 @@
 #include <stdlib.h>
 void copying_file(char *filecopied);
 int isFile(const char *ff_name);
-void openandclosedir(char argL[], char argA[]);
+void openandclosedir(void);
 
 
 int main(int argc, char* argv[] ){
 	
 
 	//Messages to be printed
-	char damn[]="Sorry, File/Folder hasot been opened";
-	char welcome[]="File opened successlly";
-		openandclosedir(damn,welcome);
+	char damn[]=
+	char welcome[]="";
+		openandclosedir();
 
 	return 0;
 
 
 }
 // Open Parent Dir 
-void openandclosedir(char argL[], char argA[]){
+void openandclosedir(void)
+{
 	FILE *Shiro,*Tut1;
 	DIR* folder;
 	struct dirent *shit;
@@ -37,16 +38,16 @@ void openandclosedir(char argL[], char argA[]){
 	//Tut1 = fopen("Tut1.txt","w");
 	folder = opendir(".");
 	//Checks folder/file Situation Open/NOTopen
-		if (Shiro == NULL && Tut1 == NULL && folder == NULL ){
+		if ( folder == NULL ){ // Shiro == NULL && Tut1 == NULL &&
 			//Printfail message
-		printf("%s\n",argL);
+		printf("Sorry, File/Folder has not been opened");
 	
 	}
 
 
 	else{
 		//print success message
-		printf("%s\n", argA);
+		printf("File opened successlly");
 			
 			/*fscanf(Shiro,"%[^\0]s",Arr); proof of concpet learning
 			fprintf(Tut1,"%s\n Znullptr is gay ",Arr);*/
@@ -133,7 +134,27 @@ void copying_file(char *filecopied)
 }
 
 
+void copying_folders(char *foldercopied){
+	char ch,folderpath[]="../RecursiveFolderCopier/";
+	DIR* folder1;
+	folder1 = opendir(foldercopied);
 
+	if(directory == NULL)
+    {
+     
+     return EXIT_FAILURE;
+
+    }
+
+    else{
+    	check= mkdir("") 
+    	 openandclosedir();
+
+
+    }
+
+
+}
 
 /* UnWanted commentes
 lstat(shit->d_name,&file_info);
