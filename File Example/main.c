@@ -14,6 +14,7 @@
 #include <limits.h>
 void copying_file(char *filecopied,char *argm);
 void openandclosedir(char *argn,char* filepath);
+//void openandclosedir2(char *argn,char* filepath);
 int copying_folders(char *foldercopied, char *path);
 int isFile(char *checkpath,const char *ff_name);
 const char *  FolderPathcorrector(char *sher);
@@ -36,11 +37,11 @@ int main(int argc, char* argv[] ){
 // Open Parent Dir 
 void openandclosedir(char *argn,char* filepath)
 {
-	FILE *Shiro,*Tut1;
+	//FILE *Shiro,*Tut1;
 	DIR* folder;
 	struct dirent *shit;
 
-  char *currentPath, *NextPath;
+  char *currentPath;
   
    // Go Parent directory, then Open RecursiveFolderCoper Folder
   
@@ -51,12 +52,12 @@ void openandclosedir(char *argn,char* filepath)
 
   if (argn != "." || filepath != "."){
     currentPath =filepath;
-    sprintf(NextPath,"%s/%s/",currentPath,argn);
+    
 
   }
   else{
     currentPath=".";
-    NextPath=".";
+    
 
   }
    folder = opendir(currentPath);
@@ -71,12 +72,13 @@ void openandclosedir(char *argn,char* filepath)
 
 	else{
 		//print success message
-		printf("File opened successlly\n");
+		printf("Folder opened successlly\n");
 			
 			/*fscanf(Shiro,"%[^\0]s",Arr); proof of concpet learning
 			fprintf(Tut1,"%s\n Znullptr is gay ",Arr);*/
 
         		while((shit=readdir(folder))!=NULL){
+
         			if (strcmp(shit->d_name, ".") == 0) continue;   /* current dir */
     				if (strcmp(shit->d_name, "..") == 0) continue;  /* parent dir  */
     				
@@ -84,12 +86,12 @@ void openandclosedir(char *argn,char* filepath)
      					printf("%s\t",shit->d_name);
      					printf("This is not a direcotry\n");
               
-     					copying_file(shit->d_name,NextPath);
+     					copying_file(shit->d_name,currentPath);
     				}
     				if(isFile(currentPath,shit->d_name) == 0 ){
             			printf("%s\t",shit->d_name);
      					printf("This is a direcotry\n") ;    
-                      //copying_folders(shit->d_name,NextPath);    		
+                      copying_folders(shit->d_name,currentPath);    		
             						}
 
 
@@ -150,7 +152,9 @@ void copying_file(char *filecopied,char *argm)
 else{ 
 
   rpath = filecopied;
-  tpath =filecopied;
+
+  sprintf(tpath,"%s/%s",filepath,filecopied);
+ 
 }  
 	
 
@@ -189,23 +193,29 @@ else{
 
 int copying_folders(char *foldercopied, char *path)
 {
-char ch,*folderpath="../RecursiveFolderCopier/";
-  char *Hpath;
-    if (path ="."){
+char *folderpath="../RecursiveFolderCopier/";
+  char *tpath,t2path[512];
+  if (path !="."){
 
-    sprintf(Hpath,"%s/%s",path,foldercopied);
+   
+    sprintf(t2path,"%s/%s",path,foldercopied);
+    sprintf(tpath,"%s/%s/%s",folderpath,FolderPathcorrector(path),foldercopied);
+    mkdir(tpath);
 
-  }
-  else{
-    
-  sprintf(Hpath,"%s/%s",folderpath, path);
+}
+else{ 
 
-  }
-
+  
+  sprintf(t2path,"./%s",foldercopied);
+  sprintf(tpath,"%s/%s",folderpath,foldercopied);
+  
+ mkdir(tpath);
+ printf("successfully created %s \n", foldercopied);
+}  
   
 	
   	DIR* folder1;
-	  folder1 = opendir(Hpath);
+	  folder1 = opendir(tpath);
 
 	
 	if(folder1 == NULL)
@@ -216,10 +226,9 @@ char ch,*folderpath="../RecursiveFolderCopier/";
 
     else{
 
+      printf("%s\n", t2path);
+        //openandclosedir(foldercopied,t2path);
     	
-        mkdir(foldercopied);
-    	openandclosedir(foldercopied,path);
-
 
     }
 
@@ -238,6 +247,10 @@ const char *  FolderPathcorrector(char *sher)
    return word2;
 
 }
+
+
+
+
 /* UnWanted commentes
 lstat(shit->d_name,&file_info);
 
