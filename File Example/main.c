@@ -9,45 +9,69 @@
 //#include <sys/stat.h>
 #include <errno.h>	
 #include <stdlib.h>
-void copying_file(char *filecopied);
-int isFile(const char *ff_name);
-void openandclosedir(void);
+#include <unistd.h>
+
+#include <limits.h>
+void copying_file(char *filecopied,char *argm);
+void openandclosedir(char *argn,char* filepath);
+int copying_folders(char *foldercopied, char *path);
+int isFile(char *checkpath,const char *ff_name);
+const char *  FolderPathcorrector(char *sher);
+
+
 
 
 int main(int argc, char* argv[] ){
 	
+  char* originalpath= ".";
 
 	//Messages to be printed
-	char damn[]=
-	char welcome[]="";
-		openandclosedir();
+
+		openandclosedir(originalpath, originalpath);
 
 	return 0;
 
 
 }
 // Open Parent Dir 
-void openandclosedir(void)
+void openandclosedir(char *argn,char* filepath)
 {
 	FILE *Shiro,*Tut1;
 	DIR* folder;
 	struct dirent *shit;
+
+  char *currentPath, *NextPath;
+  
+   // Go Parent directory, then Open RecursiveFolderCoper Folder
+  
 	//struct stat file_info;
-	char Arr[512];
+	//char Arr[512];
 	//Shiro = fopen("Gay123.txt","r");
 	//Tut1 = fopen("Tut1.txt","w");
-	folder = opendir(".");
+
+  if (argn != "." || filepath != "."){
+    currentPath =filepath;
+    sprintf(NextPath,"%s/%s/",currentPath,argn);
+
+  }
+  else{
+    currentPath=".";
+    NextPath=".";
+
+  }
+   folder = opendir(currentPath);
+
 	//Checks folder/file Situation Open/NOTopen
 		if ( folder == NULL ){ // Shiro == NULL && Tut1 == NULL &&
 			//Printfail message
-		printf("Sorry, File/Folder has not been opened");
+		printf("Sorry, File/Folder has not been opened\n");
 	
 	}
 
 
 	else{
 		//print success message
-		printf("File opened successlly");
+		printf("File opened successlly\n");
 			
 			/*fscanf(Shiro,"%[^\0]s",Arr); proof of concpet learning
 			fprintf(Tut1,"%s\n Znullptr is gay ",Arr);*/
@@ -56,15 +80,16 @@ void openandclosedir(void)
         			if (strcmp(shit->d_name, ".") == 0) continue;   /* current dir */
     				if (strcmp(shit->d_name, "..") == 0) continue;  /* parent dir  */
     				
-    				if((isFile(shit->d_name) == 1) ){
+    				if((isFile(currentPath,shit->d_name) == 1) ){
      					printf("%s\t",shit->d_name);
      					printf("This is not a direcotry\n");
-
-     					copying_file(shit->d_name);
+              
+     					copying_file(shit->d_name,NextPath);
     				}
-    				if(isFile(shit->d_name) == 0 ){
+    				if(isFile(currentPath,shit->d_name) == 0 ){
             			printf("%s\t",shit->d_name);
-     					printf("This is a direcotry\n") ;        		
+     					printf("This is a direcotry\n") ;    
+                      //copying_folders(shit->d_name,NextPath);    		
             						}
 
 
@@ -76,13 +101,23 @@ void openandclosedir(void)
 
 }
 
-int isFile(const char *ff_name)
+int isFile(char *checkpath,const char *ff_name)
 {
+  char *rpath;
+    if (checkpath !="."){
 
-	char fileX[]= "./";
-	strcat(fileX,ff_name);
+    sprintf(rpath,"%s/%s",checkpath,ff_name);
 
-	DIR* directory =opendir(fileX);
+
+}
+else{ 
+
+  rpath = ff_name;
+}  
+	
+	
+
+	DIR* directory =opendir(rpath);
     
 
     if(directory != NULL)
@@ -100,12 +135,29 @@ int isFile(const char *ff_name)
     return -1;
 }
 // Copies files existed in the Dir
-void copying_file(char *filecopied)
+void copying_file(char *filecopied,char *argm)
 {
-	char ch,filepath[]="../RecursiveFolderCopier/"; // Go Parent directory, then Open RecursiveFolderCoper Folder
+  char ch;
+  char filepath[]="../RecursiveFolderCopier/";
+  char *rpath,*tpath;
+    if (argm !="."){
+
+    sprintf(rpath,"%s/%s",argm,filecopied);
+
+    sprintf(tpath,"%s/%s/%s",filepath,FolderPathcorrector(argm),filecopied);
+
+}
+else{ 
+
+  rpath = filecopied;
+  tpath =filecopied;
+}  
+	
+
 
 	FILE *original,*target;
 
+  long size;
 	original = fopen(filecopied,"r");
 
 	 if (original == NULL)
@@ -114,7 +166,7 @@ void copying_file(char *filecopied)
       exit(EXIT_FAILURE);
    }
    strcat(filepath,filecopied);
-   target = fopen(filepath, "w");
+   target = fopen(tpath, "w");
 
    	if(target == NULL)
     {
@@ -125,8 +177,9 @@ void copying_file(char *filecopied)
     //copies file char by char
      while ((ch = fgetc(original)) != EOF)
       fputc(ch, target);
+        size= ftell(target);
+  	   printf(" %s successfully copied.\n %s Size : %ld bytes ",filecopied,filecopied,size);
 
-  	   printf("File copied successfully.\n");
  
    fclose(original);
    fclose(target);
@@ -134,28 +187,57 @@ void copying_file(char *filecopied)
 }
 
 
-void copying_folders(char *foldercopied){
-	char ch,folderpath[]="../RecursiveFolderCopier/";
-	DIR* folder1;
-	folder1 = opendir(foldercopied);
+int copying_folders(char *foldercopied, char *path)
+{
+char ch,*folderpath="../RecursiveFolderCopier/";
+  char *Hpath;
+    if (path ="."){
 
-	if(directory == NULL)
+    sprintf(Hpath,"%s/%s",path,foldercopied);
+
+  }
+  else{
+    
+  sprintf(Hpath,"%s/%s",folderpath, path);
+
+  }
+
+  
+	
+  	DIR* folder1;
+	  folder1 = opendir(Hpath);
+
+	
+	if(folder1 == NULL)
     {
      
      return EXIT_FAILURE;
-
     }
 
     else{
-    	check= mkdir("") 
-    	 openandclosedir();
+
+    	
+        mkdir(foldercopied);
+    	openandclosedir(foldercopied,path);
 
 
     }
 
 
 }
+const char *  FolderPathcorrector(char *sher)
+{
 
+
+
+
+   char word2[512];
+
+   strcpy(word2,&sher[2]);
+
+   return word2;
+
+}
 /* UnWanted commentes
 lstat(shit->d_name,&file_info);
 
@@ -182,5 +264,5 @@ https://www.geeksforgeeks.org/basics-file-handling-c/
 https://www.geeksforgeeks.org/create-directoryfolder-cc-program/
 https://www.gnu.org/software/libc/manual/html_node/Error-Codes.html
 https://android.googlesource.com/kernel/lk/+/upstream-master/include/errno.h
-
+http://www.cplusplus.com/reference/cstdio/ftell/
 */
